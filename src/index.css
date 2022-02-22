@@ -1,0 +1,93 @@
+body {
+    margin: auto;
+    background-color: darkslategrey;
+}
+main {
+    align-items: stretch;
+    justify-content: center;
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: 1fr auto;
+    gap: 1rem;
+}
+.GameBoard {
+    grid-column: 2 / span 2;
+    grid-row: 2/ auto;
+    background-color: slategrey;
+    overflow: hidden;
+    position: relative;
+    margin: auto;
+    border: 5px solid black;
+}
+.scoreBoard {
+    width: 20rem;
+    height: 25rem;
+    grid-column: 1;
+    grid-row: 2/auto;
+}
+.scoreBoard :first-child.score {
+    border: 2px solid gold;
+}
+.score {
+    color: yellowgreen;
+    font-size: 1.3rem;
+    margin: auto;
+    text-align: left;
+    padding-left: 1rem;
+    padding-top: 0.2rem;
+    padding-bottom: 0.2rem;
+    border: 1px solid darkgreen;
+    border-radius: 10px;
+}
+.score i,b{
+    color: gold;
+}
+.controls {
+    width: 20rem;
+    height: 25rem;
+    grid-column: 4;
+    grid-row: 2/auto;
+}
+.block {
+    float: left;
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    background-color: green;
+    text-align: center;
+    font-weight: bolder;
+}
+.food {
+    opacity: 90%;
+    text-align: center;
+    font-size: 23px;
+    color: gold;
+    width: 25px;
+    height: 25px;
+    border-radius: 10px;
+    background-color: red;
+    position: absolute;
+}
+
+.UI {
+    grid-row: 1 / span 1;
+    grid-column: 1 /span 4;
+    padding-top: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: end;
+}
+.currentScore {
+    margin: auto;
+    height: 2rem;
+    font-size: 2rem;
+    text-align: center;
+    color: gold;
+}
+.currentGameTime {
+    margin: auto;
+    height: 2rem;
+    font-size: 1.5rem;
+    color: red;
+    text-align: center;
+}

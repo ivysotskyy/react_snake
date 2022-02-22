@@ -4,7 +4,7 @@ import * as _ from "lodash";
 enum directions {
     UP, DOWN, LEFT, RIGHT
 }
-const gameSpeed = 160;
+const gameSpeed = 180;
 const blockSize = 25;
 const boardWidth = 800;
 const boardHeight = 650;
@@ -21,7 +21,7 @@ class Block extends React.Component<any, {left: number, top: number}> {
             <div key={this.props.id} style={{width: blockSize, height: blockSize, left: this.props.left, top: this.props.top}}
         className={"block"}
             >{this.props.value}</div>
-    )
+        )
     }
 }
 
@@ -30,13 +30,12 @@ const initialState = {
     snake: [{x: 50, y: 100}, {x:75, y: 100}, {x: 100, y: 100}, {x: 125, y: 100}, {x: 150, y: 100}],
     food: {x: 625, y: 450}
 }
-class GameBoard extends React.Component<{}, {direction: directions, snake: {x:number, y:number}[], food: {x:number, y:number}}> {
+export class GameBoard extends React.Component<{onScoreUpdate: Function, onDeath: Function}, {direction: directions, snake: {x:number, y:number}[], food: {x:number, y:number}}> {
     constructor(props: any) {
         super(props);
         this.state = initialState;
     }
     changeDirection(event: KeyboardEvent) {
-        console.log("Input detected " + event.code);
         switch(event.code) {
             case "ArrowUp":
                 if(this.state.direction != directions.DOWN)
@@ -60,11 +59,13 @@ class GameBoard extends React.Component<{}, {direction: directions, snake: {x:nu
         document.onkeydown = (event) => {this.changeDirection(event)}
         setInterval(() => this.move(), gameSpeed);
     }
+
     move() {
         this.consume();
 
         const temp = [...this.state.snake];
-
+        const tail = temp.slice(0, temp.length-2);
+        const head = this.state.snake[this.state.snake.length-1];
         let moveVector = {x: 0, y: 0};
         switch (this.state.direction) {
             case directions.LEFT:
@@ -81,32 +82,55 @@ class GameBoard extends React.Component<{}, {direction: directions, snake: {x:nu
                 break;
         }
 
-        const head = this.state.snake[this.state.snake.length-1];
-        if(head.y+moveVector.y > boardHeight-2) {
-            head.y = 0;
+
+        if(head.y+moveVector.y >= boardHeight) {
+            head.y = 0-blockSize;
+            temp.shift();
+            temp.push({x: head.x+moveVector.x, y: head.y+moveVector.y});
+            temp.splice(temp.length-1, 0, {x: head.x, y: boardHeight-blockSize});
+            this.setState({snake: [...temp]});
+            temp.shift();
+            this.setState({snake: [...temp]});
         }
-        if(head.x+moveVector.x > boardWidth-2) {
-            head.x = 0;
+        if(head.x+moveVector.x >= boardWidth) {
+            head.x = 0-blockSize;
+            temp.shift();
+            temp.push({x: head.x+moveVector.x, y: head.y+moveVector.y});
+            temp.splice(temp.length-1, 0, {x: boardWidth-blockSize, y: head.y});
+            this.setState({snake: [...temp]});
+            temp.shift();
+            this.setState({snake: [...temp]});
         }
         if(head.y+moveVector.y < 0) {
             head.y = boardHeight;
+            temp.shift();
+            temp.push({x: head.x+moveVector.x, y: head.y+moveVector.y});
+            temp.splice(temp.length-1, 0, {x: head.x, y: 0});
+            this.setState({snake: [...temp]});
+            temp.shift();
+            this.setState({snake: [...temp]});
         }
         if(head.x+moveVector.x < 0) {
             head.x = boardWidth;
-        }
-
-        temp.shift();
-        temp.push({x: head.x+moveVector.x, y: head.y+moveVector.y});
-        let tail = temp.slice(0, temp.length-2);
-        if(_.some(tail, {...head})) {
+            temp.shift();
+            temp.push({x: head.x+moveVector.x, y: head.y+moveVector.y});
+            temp.splice(temp.length-1, 0, {x: 0, y: head.y});
+            this.setState({snake: [...temp]});
+            temp.shift();
+            this.setState({snake: [...temp]});
+        }else if(_.some(tail, {...head})) {
+            this.props.onDeath();
             this.setState(initialState);
         }else {
+            temp.shift();
+            temp.push({x: head.x+moveVector.x, y: head.y+moveVector.y});
             this.setState({snake: [...temp]});
         }
     }
 
     consume() {
         if(_.isEqual(this.state.snake[this.state.snake.length - 1], this.state.food)) {
+            this.props.onScoreUpdate(1);
             this.setState({food: {x: Math.floor(Math.random()*32)*25, y: Math.floor(Math.random()*26)*25}});
             this.state.snake.unshift({x: this.state.snake[0].x, y: this.state.snake[0].y});
         }
@@ -124,7 +148,7 @@ class GameBoard extends React.Component<{}, {direction: directions, snake: {x:nu
                 return <Block key={i} value={"<|>"} left={pos.x} top={pos.y} />
             })
         }
-        <div className={"food"} style={{left: this.state.food.x, top: this.state.food.y}} > </div>
+        <div className={"food"} style={{left: this.state.food.x, top: this.state.food.y}} > {"$"} </div>
         </div>
     )
     }
