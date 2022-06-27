@@ -10,6 +10,7 @@ class Controls extends React.Component<{startGame(userName: string): void}, any>
     constructor(props: {startGame(userName: string): void}) {
         super(props);
         this.state = {inputValue: null}
+        props.startGame("Ivan");
     }
     updateInput(evt: any) {
         this.setState({inputValue: evt.target.value});

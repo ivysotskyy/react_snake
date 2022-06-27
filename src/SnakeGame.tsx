@@ -4,7 +4,7 @@ import * as _ from "lodash";
 enum directions {
     UP, DOWN, LEFT, RIGHT
 }
-const gameSpeed = 180;
+const gameSpeed = 180
 const blockSize = 25;
 const boardWidth = 800;
 const boardHeight = 650;
